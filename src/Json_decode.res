@@ -83,7 +83,7 @@ let array = (decode, json) =>
     \"@@"(raise, DecodeError("Expected array, got " ++ _stringify(json)))
   }
 
-let list = (decode, json) => array(json, decode)->List.fromArray
+let list = (decode, json) => array(decode, json)->List.fromArray
 
 let pair = (decodeA, decodeB, json) =>
   if Js.Array.isArray(json) {
