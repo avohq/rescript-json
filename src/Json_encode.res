@@ -6,8 +6,6 @@ external float: float => Js.Json.t = "%identity"
 external int: int => Js.Json.t = "%identity"
 external bool: bool => Js.Json.t = "%identity"
 
-let char = c => String.make(1, c)->string
-
 let date = d => Js.Date.toJSONUnsafe(d)->string
 
 let nullable = (encode, x) =>
@@ -32,17 +30,18 @@ let dict = (encode, d) => {
 let object_ = (props): Js.Json.t => Js.Dict.fromList(props)->jsonDict
 
 external jsonArray: array<Js.Json.t> => Js.Json.t = "%identity"
-let array = (encode, l) => Array.map(l, encode)->jsonArray
+let array: ('a => Js.Json.t, array<'a>) => Js.Json.t = (encode, l) =>
+  jsonArray(Array.map(l, encode))
 let list = (encode, x) =>
   switch x {
   | list{} => jsonArray([])
   | list{hd, ...tl} as l =>
-    let a = Array.make(List.length(l), encode(hd))
+    let a = Array.make(~length=List.length(l), encode(hd))
     let rec fill = (i, x) =>
       switch x {
       | list{} => a
       | list{hd, ...tl} =>
-        Array.setExn(a, i, encode(hd))
+        Array.setUnsafe(a, i, encode(hd))
         fill(i + 1, tl)
       }
 
