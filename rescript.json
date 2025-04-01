@@ -1,6 +1,6 @@
 {
   "name": "@glennsl/bs-json",
-  "bsc-flags": ["-bs-no-version-header", "-bs-super-errors"],
+  "bsc-flags": ["-bs-no-version-header", "-bs-super-errors", "-open Belt"],
   "package-specs": [
     {
       "module": "esmodule",

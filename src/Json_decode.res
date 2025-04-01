@@ -49,7 +49,7 @@ let char = json => {
   }
 }
 
-let date = json => json |> string |> Js.Date.fromString
+let date = json => json->string->Js.Date.fromString
 
 let nullable = (decode, json) =>
   if (Obj.magic(json): Js.null<'a>) === Js.null {
@@ -72,26 +72,25 @@ let array = (decode, json) =>
     let length = Js.Array.length(source)
     let target = _unsafeCreateUninitializedArray(length)
     for i in 0 to length - 1 {
-      let value = try decode(Array.unsafe_get(source, i)) catch {
+      let value = try decode(Array.getExn(source, i)) catch {
       | DecodeError(msg) =>
         \"@@"(raise, DecodeError(msg ++ ("\n\tin array at index " ++ string_of_int(i))))
       }
-
-      Array.unsafe_set(target, i, value)
+      Array.setExn(target, i, value)
     }
     target
   } else {
     \"@@"(raise, DecodeError("Expected array, got " ++ _stringify(json)))
   }
 
-let list = (decode, json) => json |> array(decode) |> Array.to_list
+let list = (decode, json) => array(json, decode)->List.fromArray
 
 let pair = (decodeA, decodeB, json) =>
   if Js.Array.isArray(json) {
     let source: array<Js.Json.t> = Obj.magic((json: Js.Json.t))
     let length = Js.Array.length(source)
     if length == 2 {
-      try (decodeA(Array.unsafe_get(source, 0)), decodeB(Array.unsafe_get(source, 1))) catch {
+      try (decodeA(Array.getExn(source, 0)), decodeB(Array.getExn(source, 1))) catch {
       | DecodeError(msg) => \"@@"(raise, DecodeError(msg ++ "\n\tin pair/tuple2"))
       }
     } else {
@@ -109,9 +108,9 @@ let tuple3 = (decodeA, decodeB, decodeC, json) =>
     let length = Js.Array.length(source)
     if length == 3 {
       try (
-        decodeA(Array.unsafe_get(source, 0)),
-        decodeB(Array.unsafe_get(source, 1)),
-        decodeC(Array.unsafe_get(source, 2)),
+        decodeA(Array.getExn(source, 0)),
+        decodeB(Array.getExn(source, 1)),
+        decodeC(Array.getExn(source, 2)),
       ) catch {
       | DecodeError(msg) => \"@@"(raise, DecodeError(msg ++ "\n\tin tuple3"))
       }
@@ -128,10 +127,10 @@ let tuple4 = (decodeA, decodeB, decodeC, decodeD, json) =>
     let length = Js.Array.length(source)
     if length == 4 {
       try (
-        decodeA(Array.unsafe_get(source, 0)),
-        decodeB(Array.unsafe_get(source, 1)),
-        decodeC(Array.unsafe_get(source, 2)),
-        decodeD(Array.unsafe_get(source, 3)),
+        decodeA(Array.getExn(source, 0)),
+        decodeB(Array.getExn(source, 1)),
+        decodeC(Array.getExn(source, 2)),
+        decodeD(Array.getExn(source, 3)),
       ) catch {
       | DecodeError(msg) => \"@@"(raise, DecodeError(msg ++ "\n\tin tuple4"))
       }
@@ -153,7 +152,7 @@ let dict = (decode, json) =>
     let l = Js.Array.length(keys)
     let target = Js.Dict.empty()
     for i in 0 to l - 1 {
-      let key = Array.unsafe_get(keys, i)
+      let key = Array.getExn(keys, i)
       let value = try decode(Js.Dict.unsafeGet(source, key)) catch {
       | DecodeError(msg) => \"@@"(raise, DecodeError(msg ++ "\n\tin dict"))
       }
@@ -199,7 +198,7 @@ let oneOf = (decoders, json) => {
   let rec inner = (decoders, errors) =>
     switch decoders {
     | list{} =>
-      let formattedErrors = "\n- " ++ Js.Array.joinWith("\n- ", Array.of_list(List.rev(errors)))
+      let formattedErrors = "\n- " ++ Js.Array.joinWith("\n- ", List.toArray(List.reverse(errors)))
       \"@@"(
         raise,
         DecodeError(

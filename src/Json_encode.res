@@ -6,9 +6,9 @@ external float: float => Js.Json.t = "%identity"
 external int: int => Js.Json.t = "%identity"
 external bool: bool => Js.Json.t = "%identity"
 
-let char = c => c |> String.make(1) |> string
+let char = c => String.make(1, c)->string
 
-let date = d => d |> Js.Date.toJSONUnsafe |> string
+let date = d => Js.Date.toJSONUnsafe(d)->string
 
 let nullable = (encode, x) =>
   switch x {
@@ -25,14 +25,14 @@ let withDefault = (d, encode, x) =>
 external jsonDict: Js_dict.t<Js.Json.t> => Js.Json.t = "%identity"
 let dict = (encode, d) => {
   let pairs = Js.Dict.entries(d)
-  let encodedPairs = Array.map(((k, v)) => (k, encode(v)), pairs)
+  let encodedPairs = Array.map(pairs, ((k, v)) => (k, encode(v)))
   jsonDict(Js.Dict.fromArray(encodedPairs))
 }
 
-let object_ = (props): Js.Json.t => props |> Js.Dict.fromList |> jsonDict
+let object_ = (props): Js.Json.t => Js.Dict.fromList(props)->jsonDict
 
 external jsonArray: array<Js.Json.t> => Js.Json.t = "%identity"
-let array = (encode, l) => l |> Array.map(encode) |> jsonArray
+let array = (encode, l) => Array.map(l, encode)->jsonArray
 let list = (encode, x) =>
   switch x {
   | list{} => jsonArray([])
@@ -42,7 +42,7 @@ let list = (encode, x) =>
       switch x {
       | list{} => a
       | list{hd, ...tl} =>
-        Array.unsafe_set(a, i, encode(hd))
+        Array.setExn(a, i, encode(hd))
         fill(i + 1, tl)
       }
 
