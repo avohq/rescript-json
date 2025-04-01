@@ -192,10 +192,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@rescript/core@^1.6.1":
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/@rescript/core/-/core-1.6.1.tgz#159670c94d64a2b8236f46be2bf09a007b1ece08"
-  integrity sha512-vyb5k90ck+65Fgui+5vCja/mUfzKaK3kOPT4Z6aAJdHLH1eljEi1zKhXroCiCtpNLSWp8k4ulh1bdB5WS0hvqA==
+"@rescript/core@1.5.2":
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/@rescript/core/-/core-1.5.2.tgz#7c15659c2e1655ca5430dd665ca5a95ae5b64673"
+  integrity sha512-VWRFHrQu8hWnd9Y9LYZ8kig2urybhZlDVGy5u50bqf2WCRAeysBIfxK8eN4VlpQT38igMo0/uLX1KSpwCVMYGw==
 
 aggregate-error@^3.0.0:
   version "3.1.0"
