@@ -1,10 +1,6 @@
 {
   "name": "@glennsl/bs-json",
-  "bsc-flags": [
-    "-bs-no-version-header",
-    "-bs-super-errors",
-    "-open RescriptCore"
-  ],
+  "bsc-flags": ["-bs-no-version-header", "-bs-super-errors"],
   "package-specs": [
     {
       "module": "esmodule",
@@ -16,6 +12,5 @@
     "number": "-48-3-26",
     "error": "+a+8-20-101-22-30-3-103-109-26"
   },
-  "sources": ["src"],
-  "bs-dependencies": ["@rescript/core"]
+  "sources": ["src"]
 }

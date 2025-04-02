@@ -1,3 +1,5 @@
+open Belt
+
 @new external _unsafeCreateUninitializedArray: int => array<'a> = "Array"
 
 @val external _stringify: Js.Json.t => string = "JSON.stringify"

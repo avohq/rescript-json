@@ -1,6 +1,6 @@
 {
   "name": "@glennsl/bs-json",
-  "version": "5.0.4",
+  "version": "6.0.0",
   "description": "Compositional JSON encode/decode library for ReScript",
   "main": "index.js",
   "type": "module",
@@ -28,9 +28,8 @@
     "bsconfig.json"
   ],
   "devDependencies": {
-    "@rescript/core": "^0.7.0",
     "coveralls": "^3.1.0",
     "nyc": "^15.0.1",
-    "rescript": "^11.1.0"
+    "rescript": "11.1.4"
   }
 }

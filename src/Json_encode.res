@@ -1,3 +1,5 @@
+open Belt
+
 type encoder<'a> = 'a => Js.Json.t
 
 @val external null: Js.Json.t = "null"
@@ -36,7 +38,7 @@ let list = (encode, x) =>
   switch x {
   | list{} => jsonArray([])
   | list{hd, ...tl} as l =>
-    let a = Array.make(~length=List.length(l), encode(hd))
+    let a = Array.make(List.length(l), encode(hd))
     let rec fill = (i, x) =>
       switch x {
       | list{} => a
