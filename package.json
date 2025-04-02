@@ -28,9 +28,9 @@
     "bsconfig.json"
   ],
   "devDependencies": {
-    "@rescript/core": "1.5.2",
+    "@rescript/core": "^0.7.0",
     "coveralls": "^3.1.0",
     "nyc": "^15.0.1",
-    "rescript": "11.1"
+    "rescript": "^11.1.0"
   }
 }
