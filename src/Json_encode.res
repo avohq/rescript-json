@@ -1,5 +1,3 @@
-open Belt
-
 type encoder<'a> = 'a => Js.Json.t
 
 @val external null: Js.Json.t = "null"
@@ -25,7 +23,7 @@ let withDefault = (d, encode, x) =>
 external jsonDict: Js_dict.t<Js.Json.t> => Js.Json.t = "%identity"
 let dict = (encode, d) => {
   let pairs = Js.Dict.entries(d)
-  let encodedPairs = Array.map(pairs, ((k, v)) => (k, encode(v)))
+  let encodedPairs = Belt.Array.map(pairs, ((k, v)) => (k, encode(v)))
   jsonDict(Js.Dict.fromArray(encodedPairs))
 }
 
@@ -33,7 +31,7 @@ let object_ = (props): Js.Json.t => Js.Dict.fromList(props)->jsonDict
 
 external jsonArray: array<Js.Json.t> => Js.Json.t = "%identity"
 let array: ('a => Js.Json.t, array<'a>) => Js.Json.t = (encode, l) =>
-  jsonArray(Array.map(l, encode))
+  jsonArray(Belt.Array.map(l, encode))
 let list = (encode, x) =>
   switch x {
   | list{} => jsonArray([])

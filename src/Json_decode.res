@@ -1,5 +1,3 @@
-open Belt
-
 @new external _unsafeCreateUninitializedArray: int => array<'a> = "Array"
 
 @val external _stringify: Js.Json.t => string = "JSON.stringify"
@@ -76,7 +74,7 @@ let array = (decode, json) =>
     \"@@"(raise, DecodeError("Expected array, got " ++ _stringify(json)))
   }
 
-let list = (decode, json) => array(decode, json)->List.fromArray
+let list = (decode, json) => array(decode, json)->Belt.List.fromArray
 
 let pair = (decodeA, decodeB, json) =>
   if Js.Array.isArray(json) {
@@ -194,7 +192,8 @@ let oneOf = (decoders, json) => {
   let rec inner = (decoders, errors) =>
     switch decoders {
     | list{} =>
-      let formattedErrors = "\n- " ++ Js.Array.joinWith("\n- ", List.toArray(List.reverse(errors)))
+      let formattedErrors =
+        "\n- " ++ Js.Array.joinWith("\n- ", Belt.List.toArray(Belt.List.reverse(errors)))
       \"@@"(
         raise,
         DecodeError(
