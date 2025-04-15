@@ -14,14 +14,14 @@ let bool = json =>
   if Js.typeof(json) == "boolean" {
     (Obj.magic((json: Js.Json.t)): bool)
   } else {
-    \"@@"(raise, DecodeError("Expected boolean, got " ++ _stringify(json)))
+    raise(DecodeError(`Expected boolean, got ${_stringify(json)}`))
   }
 
 let float = json =>
   if Js.typeof(json) == "number" {
     (Obj.magic((json: Js.Json.t)): float)
   } else {
-    \"@@"(raise, DecodeError("Expected number, got " ++ _stringify(json)))
+    raise(DecodeError(`Expected number, got ${_stringify(json)}`))
   }
 
 let int = json => {
@@ -29,7 +29,7 @@ let int = json => {
   if _isInteger(f) {
     (Obj.magic((f: float)): int)
   } else {
-    \"@@"(raise, DecodeError("Expected integer, got " ++ _stringify(json)))
+    raise(DecodeError(`Expected integer, got ${_stringify(json)}`))
   }
 }
 
@@ -37,7 +37,7 @@ let string = json =>
   if Js.typeof(json) == "string" {
     (Obj.magic((json: Js.Json.t)): string)
   } else {
-    \"@@"(raise, DecodeError("Expected string, got " ++ _stringify(json)))
+    raise(DecodeError(`Expected string, got ${_stringify(json)}`))
   }
 
 let date = json => json->string->Js.Date.fromString
@@ -54,7 +54,7 @@ let nullAs = (value, json) =>
   if (Obj.magic(json): Js.null<'a>) === Js.null {
     value
   } else {
-    \"@@"(raise, DecodeError("Expected null, got " ++ _stringify(json)))
+    raise(DecodeError(`Expected null, got ${_stringify(json)}`))
   }
 
 let array = (decode, json) =>
@@ -65,13 +65,13 @@ let array = (decode, json) =>
     for i in 0 to length - 1 {
       let value = try decode(Js.Array2.unsafe_get(source, i)) catch {
       | DecodeError(msg) =>
-        \"@@"(raise, DecodeError(msg ++ ("\n\tin array at index " ++ string_of_int(i))))
+        raise(DecodeError(msg ++ `\n\tin array at index ${Belt.Int.toString(i)}`))
       }
       Js.Array2.unsafe_set(target, i, value)
     }
     target
   } else {
-    \"@@"(raise, DecodeError("Expected array, got " ++ _stringify(json)))
+    raise(DecodeError(`Expected array, got ${_stringify(json)}`))
   }
 
 let list = (decode, json) => array(decode, json)->Belt.List.fromArray
@@ -85,13 +85,15 @@ let pair = (decodeA, decodeB, json) =>
         decodeA(Js.Array2.unsafe_get(source, 0)),
         decodeB(Js.Array2.unsafe_get(source, 1)),
       ) catch {
-      | DecodeError(msg) => \"@@"(raise, DecodeError(msg ++ "\n\tin pair/tuple2"))
+      | DecodeError(msg) => raise(DecodeError(`${msg}\n\tin pair/tuple2`))
       }
     } else {
-      \"@@"(raise, DecodeError("Expected array of length 2, got array of length $length"))
+      raise(
+        DecodeError(`Expected array of length 2, got array of length ${Belt.Int.toString(length)}`),
+      )
     }
   } else {
-    \"@@"(raise, DecodeError("Expected array, got " ++ _stringify(json)))
+    raise(DecodeError(`Expected array, got ${_stringify(json)}`))
   }
 
 let tuple2 = pair
@@ -106,13 +108,15 @@ let tuple3 = (decodeA, decodeB, decodeC, json) =>
         decodeB(Js.Array2.unsafe_get(source, 1)),
         decodeC(Js.Array2.unsafe_get(source, 2)),
       ) catch {
-      | DecodeError(msg) => \"@@"(raise, DecodeError(msg ++ "\n\tin tuple3"))
+      | DecodeError(msg) => raise(DecodeError(`${msg}\n\tin tuple3`))
       }
     } else {
-      \"@@"(raise, DecodeError("Expected array of length 3, got array of length $length"))
+      raise(
+        DecodeError(`Expected array of length 3, got array of length ${Belt.Int.toString(length)}`),
+      )
     }
   } else {
-    \"@@"(raise, DecodeError("Expected array, got " ++ _stringify(json)))
+    raise(DecodeError(`Expected array, got ${_stringify(json)}`))
   }
 
 let tuple4 = (decodeA, decodeB, decodeC, decodeD, json) =>
@@ -126,13 +130,15 @@ let tuple4 = (decodeA, decodeB, decodeC, decodeD, json) =>
         decodeC(Js.Array2.unsafe_get(source, 2)),
         decodeD(Js.Array2.unsafe_get(source, 3)),
       ) catch {
-      | DecodeError(msg) => \"@@"(raise, DecodeError(msg ++ "\n\tin tuple4"))
+      | DecodeError(msg) => raise(DecodeError(`${msg}\n\tin tuple4`))
       }
     } else {
-      \"@@"(raise, DecodeError("Expected array of length 4, got array of length $length"))
+      raise(
+        DecodeError(`Expected array of length 4, got array of length ${Belt.Int.toString(length)}`),
+      )
     }
   } else {
-    \"@@"(raise, DecodeError("Expected array, got " ++ _stringify(json)))
+    raise(DecodeError(`Expected array, got ${_stringify(json)}`))
   }
 
 let dict = (decode, json) =>
@@ -148,14 +154,14 @@ let dict = (decode, json) =>
     for i in 0 to l - 1 {
       let key = Js.Array2.unsafe_get(keys, i)
       let value = try decode(Js.Dict.unsafeGet(source, key)) catch {
-      | DecodeError(msg) => \"@@"(raise, DecodeError(msg ++ "\n\tin dict"))
+      | DecodeError(msg) => raise(DecodeError(`${msg}\n\tin dict`))
       }
 
       Js.Dict.set(target, key, value)
     }
     target
   } else {
-    \"@@"(raise, DecodeError("Expected object, got " ++ _stringify(json)))
+    raise(DecodeError(`Expected object, got ${_stringify(json)}`))
   }
 
 let field = (key, decode, json) =>
@@ -168,19 +174,19 @@ let field = (key, decode, json) =>
     switch Js.Dict.get(dict, key) {
     | Some(value) =>
       try decode(value) catch {
-      | DecodeError(msg) => \"@@"(raise, DecodeError(msg ++ ("\n\tat field '" ++ (key ++ "'"))))
+      | DecodeError(msg) => raise(DecodeError(`${msg}\n\tat field '(${key})'`))
       }
-    | None => \"@@"(raise, DecodeError("Expected field '$(key)'"))
+    | None => raise(DecodeError(`Expected field '(${key})'`))
     }
   } else {
-    \"@@"(raise, DecodeError("Expected object, got " ++ _stringify(json)))
+    raise(DecodeError(`Expected object, got ${_stringify(json)}`))
   }
 
 let rec at = (key_path, decoder) =>
   switch key_path {
   | list{key} => field(key, decoder, ...)
   | list{first, ...rest} => field(first, at(rest, decoder), ...)
-  | list{} => \"@@"(raise, Invalid_argument("Expected key_path to contain at least one element"))
+  | list{} => raise(Invalid_argument("Expected key_path to contain at least one element"))
   }
 
 let optional = (decode, json) =>
@@ -192,15 +198,18 @@ let oneOf = (decoders, json) => {
   let rec inner = (decoders, errors) =>
     switch decoders {
     | list{} =>
-      let formattedErrors =
-        "\n- " ++ Js.Array.joinWith("\n- ", Belt.List.toArray(Belt.List.reverse(errors)))
-      \"@@"(
-        raise,
+      let formattedErrors = `\n- ${Js.Array2.joinWith(
+          Belt.List.toArray(Belt.List.reverse(errors)),
+          "\n- ",
+        )}`
+      raise(
         DecodeError(
-          "All decoders given to oneOf failed. Here are all the errors: $formattedErrors\nAnd the JSON being decoded: " ++
-          _stringify(json),
+          `All decoders given to oneOf failed. Here are all the errors: ${formattedErrors}\nAnd the JSON being decoded: ${_stringify(
+              json,
+            )}`,
         ),
       )
+
     | list{decode, ...rest} =>
       try decode(json) catch {
       | DecodeError(e) => inner(rest, list{e, ...errors})
