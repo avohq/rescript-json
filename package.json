@@ -24,11 +24,10 @@
   },
   "homepage": "https://github.com/glennsl/bs-json#readme",
   "files": [
-    "src/*.ml*",
-    "bsconfig.json"
+    "src/*.res*",
+    "rescript.json"
   ],
   "devDependencies": {
-    "coveralls": "^3.1.0",
     "nyc": "^15.0.1",
     "rescript": "11.1.4"
   }

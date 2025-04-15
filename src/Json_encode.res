@@ -43,7 +43,7 @@ let list = (encode, x) =>
       switch x {
       | list{} => a
       | list{hd, ...tl} =>
-        Array.setUnsafe(a, i, encode(hd))
+        Js.Array2.unsafe_set(a, i, encode(hd))
         fill(i + 1, tl)
       }
 

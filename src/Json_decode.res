@@ -65,11 +65,11 @@ let array = (decode, json) =>
     let length = Js.Array.length(source)
     let target = _unsafeCreateUninitializedArray(length)
     for i in 0 to length - 1 {
-      let value = try decode(Array.getUnsafe(source, i)) catch {
+      let value = try decode(Js.Array2.unsafe_get(source, i)) catch {
       | DecodeError(msg) =>
         \"@@"(raise, DecodeError(msg ++ ("\n\tin array at index " ++ string_of_int(i))))
       }
-      Array.setUnsafe(target, i, value)
+      Js.Array2.unsafe_set(target, i, value)
     }
     target
   } else {
@@ -83,7 +83,10 @@ let pair = (decodeA, decodeB, json) =>
     let source: array<Js.Json.t> = Obj.magic((json: Js.Json.t))
     let length = Js.Array.length(source)
     if length == 2 {
-      try (decodeA(Array.getUnsafe(source, 0)), decodeB(Array.getUnsafe(source, 1))) catch {
+      try (
+        decodeA(Js.Array2.unsafe_get(source, 0)),
+        decodeB(Js.Array2.unsafe_get(source, 1)),
+      ) catch {
       | DecodeError(msg) => \"@@"(raise, DecodeError(msg ++ "\n\tin pair/tuple2"))
       }
     } else {
@@ -101,9 +104,9 @@ let tuple3 = (decodeA, decodeB, decodeC, json) =>
     let length = Js.Array.length(source)
     if length == 3 {
       try (
-        decodeA(Array.getUnsafe(source, 0)),
-        decodeB(Array.getUnsafe(source, 1)),
-        decodeC(Array.getUnsafe(source, 2)),
+        decodeA(Js.Array2.unsafe_get(source, 0)),
+        decodeB(Js.Array2.unsafe_get(source, 1)),
+        decodeC(Js.Array2.unsafe_get(source, 2)),
       ) catch {
       | DecodeError(msg) => \"@@"(raise, DecodeError(msg ++ "\n\tin tuple3"))
       }
@@ -120,10 +123,10 @@ let tuple4 = (decodeA, decodeB, decodeC, decodeD, json) =>
     let length = Js.Array.length(source)
     if length == 4 {
       try (
-        decodeA(Array.getUnsafe(source, 0)),
-        decodeB(Array.getUnsafe(source, 1)),
-        decodeC(Array.getUnsafe(source, 2)),
-        decodeD(Array.getUnsafe(source, 3)),
+        decodeA(Js.Array2.unsafe_get(source, 0)),
+        decodeB(Js.Array2.unsafe_get(source, 1)),
+        decodeC(Js.Array2.unsafe_get(source, 2)),
+        decodeD(Js.Array2.unsafe_get(source, 3)),
       ) catch {
       | DecodeError(msg) => \"@@"(raise, DecodeError(msg ++ "\n\tin tuple4"))
       }
@@ -145,7 +148,7 @@ let dict = (decode, json) =>
     let l = Js.Array.length(keys)
     let target = Js.Dict.empty()
     for i in 0 to l - 1 {
-      let key = Array.getUnsafe(keys, i)
+      let key = Js.Array2.unsafe_get(keys, i)
       let value = try decode(Js.Dict.unsafeGet(source, key)) catch {
       | DecodeError(msg) => \"@@"(raise, DecodeError(msg ++ "\n\tin dict"))
       }

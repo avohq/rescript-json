@@ -7,6 +7,7 @@
       "in-source": true
     }
   ],
+  "uncurried": false,
   "suffix": ".mjs",
   "warnings": {
     "number": "-48-3-26",
